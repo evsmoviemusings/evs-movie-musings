@@ -6,6 +6,25 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
+  - name: "ticker"
+    label: "Now Screening Ticker"
+    files:
+      - name: "ticker"
+        label: "Ticker Items"
+        file: "data/ticker.json"
+        fields:
+          - label: "Items"
+            name: "items"
+            widget: "list"
+            summary: "{{label}}: {{detail}}"
+            fields:
+              - label: "Label (short, all caps look)"
+                name: "label"
+                widget: "string"
+                hint: "e.g. NOW WATCHING, UP NEXT, ON THE SHELF"
+              - label: "Detail"
+                name: "detail"
+                widget: "string"
   - name: "reviews"
     label: "Reviews"
     files:
