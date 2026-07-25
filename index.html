@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ev's Movie Musings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EAE3D0;
+    --paper-soft: #E2D9C2;
+    --ink: #1C1A16;
+    --ink-soft: #4A4436;
+    --rule: #B7AC8C;
+    --stamp: #9C3B2E;
+    --brass: #A67F2E;
+    --white-ink: #F6F2E7;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* subtle paper texture via layered gradients */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.025) 0%, transparent 45%);
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; }
+
+  header {
+    padding: 4.5rem 6vw 3rem;
+    border-bottom: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    margin-bottom: 0.9rem;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: "—";
+    margin: 0 0.6em;
+    color: var(--brass);
+  }
+
+  h1.title {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  h1.title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--stamp);
+  }
+
+  .tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 1rem;
+    max-width: 40ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .subscribe-link {
+    display: inline-block;
+    margin-top: 1.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white-ink);
+    background: var(--stamp);
+    text-decoration: none;
+    padding: 0.75rem 1.7rem;
+    border-radius: 999px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .subscribe-link:hover {
+    background: #7E2E23;
+    transform: translateY(-1px);
+  }
+
+  .subscribe-link:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* Now Screening ticker */
+  .ticker-outer {
+    background: var(--ink);
+    color: var(--white-ink);
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ticker-inner {
+    display: inline-block;
+    padding: 0.55rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    animation: scroll 32s linear infinite;
+  }
+  .ticker-inner span { margin-right: 3.5rem; color: var(--white-ink); opacity: 0.9; }
+  .ticker-inner span b { color: #D9B14A; font-weight: 700; }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-inner { animation: none; }
+  }
+
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3.5rem 6vw 6rem;
+  }
+
+  .intro {
+    max-width: 62ch;
+    margin: 0 auto 3rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  /* Category filter — reads like index tabs on a card catalog */
+  .shelf-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 0 auto 3.5rem;
+    max-width: fit-content;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.3rem;
+    background: var(--paper-soft);
+  }
+
+  .shelf-nav button {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .shelf-nav button:hover {
+    color: var(--ink);
+  }
+
+  .shelf-nav button.active {
+    background: var(--ink);
+    color: var(--white-ink);
+  }
+
+  .shelf-nav button:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 2px;
+  }
+
+  .entry[hidden] { display: none; }
+
+  .empty-shelf {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 3rem 0;
+    display: none;
+  }
+  .empty-shelf.visible { display: block; }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 1fr 168px;
+    gap: 2.5rem;
+    padding: 2.6rem 0;
+    border-bottom: 1px dashed var(--rule);
+    align-items: start;
+  }
+
+  .entry:last-of-type { border-bottom: none; }
+
+  .entry-main .kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 0.5rem;
+  }
+
+  .entry-main h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    margin: 0 0 0.7rem;
+    line-height: 1.2;
+  }
+
+  .entry-main p {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .entry-main .continue {
+    display: inline-block;
+    margin-top: 0.9rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--stamp);
+    text-decoration: none;
+    border-bottom: 1px solid var(--stamp);
+    padding-bottom: 1px;
+  }
+
+  /* Margin note / stamp column */
+  .margin-note {
+    position: relative;
+    padding-left: 1.6rem;
+    border-left: 1px dotted var(--rule);
+  }
+
+  .stamp {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--stamp);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transform: rotate(-8deg);
+    color: var(--stamp);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 0.8rem;
+  }
+  .stamp .score {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stamp .of10 {
+    font-size: 0.55rem;
+    letter-spacing: 0.05em;
+  }
+
+  .verdict {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .verdict::before { content: "“"; color: var(--brass); }
+  .verdict::after { content: "”"; color: var(--brass); }
+
+  .watched-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--rule);
+    margin-top: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 640px) {
+    .entry {
+      grid-template-columns: 1fr;
+    }
+    .margin-note {
+      border-left: none;
+      border-top: 1px dotted var(--rule);
+      padding-left: 0;
+      padding-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stamp { margin-bottom: 0; flex-shrink: 0; }
+  }
+
+  footer {
+    text-align: center;
+    padding: 3rem 6vw 4rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+  }
+  footer a { color: var(--stamp); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Notes from the last row</div>
+    <h1 class="title">Ev's Movie <em>Musings</em></h1>
+    <p class="tagline">One seat, a notebook, and whatever's playing this week.</p>
+    <a class="subscribe-link" href="mailto:?subject=Subscribe%20to%20Ev%27s%20Movie%20Musings" id="subscribeLink">Subscribe</a>
+  </header>
+
+  <div class="ticker-outer">
+    <div class="ticker-inner">
+      <span>NOW WATCHING: <b>Evil Dead Rise</b> rewatch</span>
+      <span>UP NEXT: <b>the one everyone keeps texting me about</b></span>
+      <span>ON THE SHELF: a stack of unwatched classics, growing</span>
+      <span>NOW WATCHING: <b>Evil Dead Rise</b> rewatch</span>
+      <span>UP NEXT: <b>the one everyone keeps texting me about</b></span>
+      <span>ON THE SHELF: a stack of unwatched classics, growing</span>
+    </div>
+  </div>
+
+  <main>
+    <p class="intro">Reviews, half-formed thoughts, and the occasional argument with myself about whether a movie earned its ending — written by someone who pays for their own tickets.</p>
+
+    <nav class="shelf-nav" role="tablist" aria-label="Filter reviews by category">
+      <button type="button" class="active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button type="button" data-filter="horror" role="tab" aria-selected="false">Horror</button>
+      <button type="button" data-filter="new-release" role="tab" aria-selected="false">New Releases</button>
+      <button type="button" data-filter="old-release" role="tab" aria-selected="false">Old Releases</button>
+      <button type="button" data-filter="movie-list" role="tab" aria-selected="false">Movie Lists</button>
+    </nav>
+
+    <div class="entries">
+
+      <article class="entry" data-category="horror">
+        <div class="entry-main">
+          <div class="kicker">Horror · Rewatch</div>
+          <h2>Evil Dead Rise</h2>
+          <p>Every Evil Dead film has to answer the same question: can it still make me flinch after all these years? This one finds a genuinely nasty new answer, trading the cabin in the woods for a cramped apartment and somehow making the walls feel just as merciless. It's mean in the ways this series has always earned the right to be.</p>
+          <a class="continue" href="#">Continue reading →</a>
+        </div>
+        <div class="margin-note">
+          <div class="stamp"><span class="score">8</span><span class="of10">/ 10</span></div>
+          <div class="verdict">Confident, brutal, worthy of the name</div>
+          <div class="watched-date">Watched this week</div>
+        </div>
+      </article>
+
+      <article class="entry" data-category="new-release">
+        <div class="entry-main">
+          <div class="kicker">New Release</div>
+          <h2>The One Everyone Keeps Texting Me About</h2>
+          <p>Placeholder for whatever's actually playing near you this week — swap this in for your real next review. Leads with a hook, not a plot summary. Ends with a verdict you can defend at a dinner table.</p>
+          <a class="continue" href="#">Continue reading →</a>
+        </div>
+        <div class="margin-note">
+          <div class="stamp"><span class="score">—</span><span class="of10">TBD</span></div>
+          <div class="verdict">Review coming soon</div>
+          <div class="watched-date">Draft</div>
+        </div>
+      </article>
+
+      <article class="entry" data-category="old-release">
+        <div class="entry-main">
+          <div class="kicker">Classic</div>
+          <h2>A Second Slot for a Classic Rewatch</h2>
+          <p>The margin column is built for quick verdicts on older favorites you're revisiting — no need to write a full essay every time. Sometimes a rating and a one-line note is the whole point.</p>
+          <a class="continue" href="#">Continue reading →</a>
+        </div>
+        <div class="margin-note">
+          <div class="stamp"><span class="score">9</span><span class="of10">/ 10</span></div>
+          <div class="verdict">Still holds up, still hurts</div>
+          <div class="watched-date">Rewatched last month</div>
+        </div>
+      </article>
+
+      <article class="entry" data-category="movie-list">
+        <div class="entry-main">
+          <div class="kicker">Movie List</div>
+          <h2>Five Sequels That Didn't Deserve the Hate</h2>
+          <p>A running list, not a review — the kind of post built for an argument in the comments. Swap this in for your own rankings, "if you liked X, watch Y" roundups, or a marathon-order guide. Lists live here separately from single-film reviews so they don't get buried.</p>
+          <a class="continue" href="#">Continue reading →</a>
+        </div>
+        <div class="margin-note">
+          <div class="stamp"><span class="score">5</span><span class="of10">titles</span></div>
+          <div class="verdict">Ranked, not reviewed</div>
+          <div class="watched-date">Updated periodically</div>
+        </div>
+      </article>
+
+    </div>
+
+    <p class="empty-shelf" id="emptyShelf">Nothing filed under this shelf yet — check back soon.</p>
+  </main>
+
+  <footer>
+    Ev's Movie Musings — reviews written for people who love film, not just critics.
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('.shelf-nav button');
+    var entries = document.querySelectorAll('.entry');
+    var emptyShelf = document.getElementById('emptyShelf');
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        var filter = btn.getAttribute('data-filter');
+        var visibleCount = 0;
+
+        entries.forEach(function (entry) {
+          var matches = filter === 'all' || entry.getAttribute('data-category') === filter;
+          entry.hidden = !matches;
+          if (matches) visibleCount++;
+        });
+
+        emptyShelf.classList.toggle('visible', visibleCount === 0);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
