@@ -376,14 +376,7 @@
   </header>
 
   <div class="ticker-outer">
-    <div class="ticker-inner">
-      <span>NOW WATCHING: <b>Evil Dead Rise</b> rewatch</span>
-      <span>UP NEXT: <b>the one everyone keeps texting me about</b></span>
-      <span>ON THE SHELF: a stack of unwatched classics, growing</span>
-      <span>NOW WATCHING: <b>Evil Dead Rise</b> rewatch</span>
-      <span>UP NEXT: <b>the one everyone keeps texting me about</b></span>
-      <span>ON THE SHELF: a stack of unwatched classics, growing</span>
-    </div>
+    <div class="ticker-inner" id="tickerInner"></div>
   </div>
 
   <main>
@@ -474,6 +467,38 @@
         });
       });
     }
+
+    function renderTickerSpan(item) {
+      var span = document.createElement('span');
+      span.textContent = (item.label || '') + ': ';
+      var b = document.createElement('b');
+      b.textContent = item.detail || '';
+      span.appendChild(b);
+      return span;
+    }
+
+    function loadTicker() {
+      var tickerInner = document.getElementById('tickerInner');
+      if (!tickerInner) return;
+      fetch('data/ticker.json', { cache: 'no-store' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Could not load ticker');
+          return res.json();
+        })
+        .then(function (data) {
+          var items = (data && data.items) || [];
+          if (items.length === 0) return;
+          // duplicate the list so the scroll animation loops seamlessly
+          items.concat(items).forEach(function (item) {
+            tickerInner.appendChild(renderTickerSpan(item));
+          });
+        })
+        .catch(function () {
+          // fail quietly — ticker just stays empty if it can't load
+        });
+    }
+
+    loadTicker();
 
     fetch('data/reviews.json', { cache: 'no-store' })
       .then(function (res) {
