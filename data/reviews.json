@@ -1,14 +1,15 @@
 {
   "reviews": [
     {
-      "score": "8",
-      "scoreUnit": "/ 10",
-      "category": "new-release",
-      "title": "Minions and Monsters (2026)",
-      "kicker": "Yellow chaos meets classic creatures in a monster mash",
-      "date": "07/21/2026",
       "body": "It's no exaggeration to say that an hour and a half of utterly garbled screaming has become my go-to for shaking off the weekday blues. The film places the Minions smack-dab in the 1920s cinematic world, and oddly enough, \"tiny yellow beings get into silent movies\" turns out to be the perfect narrative direction for this franchise. There's a scene of a film release turning into chaos that legitimately ranks as one of the funniest things Illumination has ever created. \n\nWhat struck me most is just how much this one is actually FOR the adults in the room. There are so many vintage Hollywood callbacks in here: silent film era jokes, studio system biz, an entire sequence that amounts to pure affection for the golden age. While most kids would have absolutely no clue what is going on that the adults can comprehend, they can enjoy the minions' sounds and hilarious facial expressions. Which is fair! That's the mark of a good kiddie flick: everyone's getting something.\n\nWhere it stumbles a bit is when the plot kind of forgets itself in the third act once the actual monsters show up; it goes from clever homage to standard chaos-machine pretty fast. Doesn't ruin it though. This is easily the best standalone Minions film thus far, which I did not expect to type in 2026, but here we are.",
-      "verdict": "A fun and fast movie with great laughs and smart monster action that fans will love"
+      "date": "07/21/2026",
+      "score": "8",
+      "kicker": "Yellow chaos meets classic creatures in a monster mash",
+      "scoreUnit": "/ 10",
+      "title": "Minions and Monsters (2026)",
+      "verdict": "A fun and fast movie with great laughs and smart monster action that fans will love",
+      "image": "/images/minions-and-monsters-title-image.jpg",
+      "category": "new-release"
     }
   ]
 }
