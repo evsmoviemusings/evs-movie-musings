@@ -227,6 +227,26 @@
     align-items: start;
   }
 
+  .entry-main {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 1.3rem;
+  }
+
+  .entry-main.no-poster {
+    grid-template-columns: 1fr;
+  }
+
+  .poster {
+    width: 96px;
+    height: 144px;
+    object-fit: cover;
+    border: 1px solid var(--rule);
+    background: var(--paper-soft);
+  }
+
+  .entry-text { min-width: 0; }
+
   .entry:last-of-type { border-bottom: none; }
 
   .entry-main .kicker {
@@ -315,6 +335,13 @@
     .entry {
       grid-template-columns: 1fr;
     }
+    .entry-main {
+      grid-template-columns: 72px 1fr;
+    }
+    .poster {
+      width: 72px;
+      height: 108px;
+    }
     .margin-note {
       border-left: none;
       border-top: 1px dotted var(--rule);
@@ -400,11 +427,20 @@
       var article = document.createElement('article');
       article.className = 'entry';
       article.setAttribute('data-category', review.category || '');
+
+      var hasPoster = review.image && String(review.image).trim() !== '';
+      var posterHtml = hasPoster
+        ? '<img class="poster" src="' + escapeHtml(review.image) + '" alt="' + escapeHtml(review.title) + ' poster" loading="lazy">'
+        : '';
+
       article.innerHTML =
-        '<div class="entry-main">' +
-          '<div class="kicker">' + escapeHtml(review.kicker) + '</div>' +
-          '<h2>' + escapeHtml(review.title) + '</h2>' +
-          '<p>' + escapeHtml(review.body) + '</p>' +
+        '<div class="entry-main' + (hasPoster ? '' : ' no-poster') + '">' +
+          posterHtml +
+          '<div class="entry-text">' +
+            '<div class="kicker">' + escapeHtml(review.kicker) + '</div>' +
+            '<h2>' + escapeHtml(review.title) + '</h2>' +
+            '<p>' + escapeHtml(review.body) + '</p>' +
+          '</div>' +
         '</div>' +
         '<div class="margin-note">' +
           '<div class="stamp"><span class="score">' + escapeHtml(review.score) + '</span><span class="of10">' + escapeHtml(review.scoreUnit) + '</span></div>' +
