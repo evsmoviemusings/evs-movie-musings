@@ -210,6 +210,14 @@
   }
   .empty-shelf.visible { display: block; }
 
+  .loading-note {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 3rem 0;
+  }
+
   .entry {
     display: grid;
     grid-template-columns: 1fr 168px;
@@ -362,64 +370,8 @@
       <button type="button" data-filter="movie-list" role="tab" aria-selected="false">Movie Lists</button>
     </nav>
 
-    <div class="entries">
-
-      <article class="entry" data-category="horror">
-        <div class="entry-main">
-          <div class="kicker">Horror · Rewatch</div>
-          <h2>Evil Dead Rise</h2>
-          <p>Every Evil Dead film has to answer the same question: can it still make me flinch after all these years? This one finds a genuinely nasty new answer, trading the cabin in the woods for a cramped apartment and somehow making the walls feel just as merciless. It's mean in the ways this series has always earned the right to be.</p>
-          <a class="continue" href="#">Continue reading →</a>
-        </div>
-        <div class="margin-note">
-          <div class="stamp"><span class="score">8</span><span class="of10">/ 10</span></div>
-          <div class="verdict">Confident, brutal, worthy of the name</div>
-          <div class="watched-date">Watched this week</div>
-        </div>
-      </article>
-
-      <article class="entry" data-category="new-release">
-        <div class="entry-main">
-          <div class="kicker">New Release</div>
-          <h2>The One Everyone Keeps Texting Me About</h2>
-          <p>Placeholder for whatever's actually playing near you this week — swap this in for your real next review. Leads with a hook, not a plot summary. Ends with a verdict you can defend at a dinner table.</p>
-          <a class="continue" href="#">Continue reading →</a>
-        </div>
-        <div class="margin-note">
-          <div class="stamp"><span class="score">—</span><span class="of10">TBD</span></div>
-          <div class="verdict">Review coming soon</div>
-          <div class="watched-date">Draft</div>
-        </div>
-      </article>
-
-      <article class="entry" data-category="old-release">
-        <div class="entry-main">
-          <div class="kicker">Classic</div>
-          <h2>A Second Slot for a Classic Rewatch</h2>
-          <p>The margin column is built for quick verdicts on older favorites you're revisiting — no need to write a full essay every time. Sometimes a rating and a one-line note is the whole point.</p>
-          <a class="continue" href="#">Continue reading →</a>
-        </div>
-        <div class="margin-note">
-          <div class="stamp"><span class="score">9</span><span class="of10">/ 10</span></div>
-          <div class="verdict">Still holds up, still hurts</div>
-          <div class="watched-date">Rewatched last month</div>
-        </div>
-      </article>
-
-      <article class="entry" data-category="movie-list">
-        <div class="entry-main">
-          <div class="kicker">Movie List</div>
-          <h2>Five Sequels That Didn't Deserve the Hate</h2>
-          <p>A running list, not a review — the kind of post built for an argument in the comments. Swap this in for your own rankings, "if you liked X, watch Y" roundups, or a marathon-order guide. Lists live here separately from single-film reviews so they don't get buried.</p>
-          <a class="continue" href="#">Continue reading →</a>
-        </div>
-        <div class="margin-note">
-          <div class="stamp"><span class="score">5</span><span class="of10">titles</span></div>
-          <div class="verdict">Ranked, not reviewed</div>
-          <div class="watched-date">Updated periodically</div>
-        </div>
-      </article>
-
+    <div class="entries" id="entries">
+      <p class="loading-note" id="loadingNote">Loading reviews…</p>
     </div>
 
     <p class="empty-shelf" id="emptyShelf">Nothing filed under this shelf yet — check back soon.</p>
@@ -433,38 +385,87 @@
 
 <script>
   (function () {
-    var buttons = document.querySelectorAll('.shelf-nav button');
-    var entries = document.querySelectorAll('.entry');
+    var entriesContainer = document.getElementById('entries');
+    var loadingNote = document.getElementById('loadingNote');
     var emptyShelf = document.getElementById('emptyShelf');
+    var buttons = document.querySelectorAll('.shelf-nav button');
 
-    buttons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        buttons.forEach(function (b) {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str == null ? '' : str;
+      return div.innerHTML;
+    }
 
-        var filter = btn.getAttribute('data-filter');
-        var visibleCount = 0;
+    function renderEntry(review) {
+      var article = document.createElement('article');
+      article.className = 'entry';
+      article.setAttribute('data-category', review.category || '');
+      article.innerHTML =
+        '<div class="entry-main">' +
+          '<div class="kicker">' + escapeHtml(review.kicker) + '</div>' +
+          '<h2>' + escapeHtml(review.title) + '</h2>' +
+          '<p>' + escapeHtml(review.body) + '</p>' +
+        '</div>' +
+        '<div class="margin-note">' +
+          '<div class="stamp"><span class="score">' + escapeHtml(review.score) + '</span><span class="of10">' + escapeHtml(review.scoreUnit) + '</span></div>' +
+          '<div class="verdict">' + escapeHtml(review.verdict) + '</div>' +
+          '<div class="watched-date">' + escapeHtml(review.date) + '</div>' +
+        '</div>';
+      return article;
+    }
 
-        entries.forEach(function (entry) {
-          var matches = filter === 'all' || entry.getAttribute('data-category') === filter;
-          entry.hidden = !matches;
-          if (matches) visibleCount++;
-        });
-
-        emptyShelf.classList.toggle('visible', visibleCount === 0);
+    function applyFilter(filter) {
+      var entries = entriesContainer.querySelectorAll('.entry');
+      var visibleCount = 0;
+      entries.forEach(function (entry) {
+        var matches = filter === 'all' || entry.getAttribute('data-category') === filter;
+        entry.hidden = !matches;
+        if (matches) visibleCount++;
       });
-    });
+      emptyShelf.classList.toggle('visible', visibleCount === 0);
+    }
+
+    function wireFilterButtons() {
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          applyFilter(btn.getAttribute('data-filter'));
+        });
+      });
+    }
+
+    fetch('data/reviews.json', { cache: 'no-store' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Could not load reviews');
+        return res.json();
+      })
+      .then(function (data) {
+        var reviews = (data && data.reviews) || [];
+        if (loadingNote) loadingNote.remove();
+        if (reviews.length === 0) {
+          emptyShelf.classList.add('visible');
+          return;
+        }
+        reviews.forEach(function (review) {
+          entriesContainer.appendChild(renderEntry(review));
+        });
+        wireFilterButtons();
+      })
+      .catch(function () {
+        if (loadingNote) loadingNote.textContent = "Couldn't load reviews right now — try refreshing.";
+      });
   })();
 </script>
-</body>
-</html>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", function (user) {});
   }
 </script>
+</body>
+</html>
