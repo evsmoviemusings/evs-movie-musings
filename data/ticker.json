@@ -1,8 +1,16 @@
 {
   "items": [
     {
-      "label": "NOW WATCHING: Young Washington, UP NEXT: Moana 2, ON THE SHELF: The Invite ",
-      "detail": "July 2026 releases "
+      "label": "NOW WATCHING: Young Washington",
+      "detail": "July 2026 release"
+    },
+    {
+      "label": "UP NEXT: Moana 2 ",
+      "detail": "July 2026 release"
+    },
+    {
+      "label": "ON THE SHELF: The Invite",
+      "detail": "July 2026 release "
     }
   ]
 }
