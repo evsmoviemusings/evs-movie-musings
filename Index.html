@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ev's Movie Musings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EAE3D0;
+    --paper-soft: #E2D9C2;
+    --ink: #1C1A16;
+    --ink-soft: #4A4436;
+    --rule: #B7AC8C;
+    --stamp: #9C3B2E;
+    --brass: #A67F2E;
+    --white-ink: #F6F2E7;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* subtle paper texture via layered gradients */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.025) 0%, transparent 45%);
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; }
+
+  header {
+    padding: 4.5rem 6vw 3rem;
+    border-bottom: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    margin-bottom: 0.9rem;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: "—";
+    margin: 0 0.6em;
+    color: var(--brass);
+  }
+
+  h1.title {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  h1.title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--stamp);
+  }
+
+  .tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 1rem;
+    max-width: 40ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .subscribe-link {
+    display: inline-block;
+    margin-top: 1.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white-ink);
+    background: var(--stamp);
+    text-decoration: none;
+    padding: 0.75rem 1.7rem;
+    border-radius: 999px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .subscribe-link:hover {
+    background: #7E2E23;
+    transform: translateY(-1px);
+  }
+
+  .subscribe-link:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* Now Screening ticker */
+  .ticker-outer {
+    background: var(--ink);
+    color: var(--white-ink);
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ticker-inner {
+    display: inline-block;
+    padding: 0.55rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    animation: scroll 32s linear infinite;
+  }
+  .ticker-inner span { margin-right: 3.5rem; color: var(--white-ink); opacity: 0.9; }
+  .ticker-inner span b { color: #D9B14A; font-weight: 700; }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-inner { animation: none; }
+  }
+
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3.5rem 6vw 6rem;
+  }
+
+  .intro {
+    max-width: 62ch;
+    margin: 0 auto 3rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  /* Category filter — reads like index tabs on a card catalog */
+  .shelf-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 0 auto 3.5rem;
+    max-width: fit-content;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.3rem;
+    background: var(--paper-soft);
+  }
+
+  .shelf-nav button {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .shelf-nav button:hover {
+    color: var(--ink);
+  }
+
+  .shelf-nav button.active {
+    background: var(--ink);
+    color: var(--white-ink);
+  }
+
+  .shelf-nav button:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 2px;
+  }
+
+  .entry[hidden] { display: none; }
+
+  .empty-shelf {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 3rem 0;
+    display: none;
+  }
+  .empty-shelf.visible { display: block; }
+
+  .loading-note {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 3rem 0;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 1fr 168px;
+    gap: 2.5rem;
+    padding: 2.6rem 0;
+    border-bottom: 1px dashed var(--rule);
+    align-items: start;
+  }
+
+  .entry-main {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 1.3rem;
+  }
+
+  .entry-main.no-poster {
+    grid-template-columns: 1fr;
+  }
+
+  .poster {
+    width: 96px;
+    height: 144px;
+    object-fit: cover;
+    border: 1px solid var(--rule);
+    background: var(--paper-soft);
+  }
+
+  .entry-text { min-width: 0; }
+
+  .entry:last-of-type { border-bottom: none; }
+
+  .entry-main .kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 0.5rem;
+  }
+
+  .entry-main h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    margin: 0 0 0.7rem;
+    line-height: 1.2;
+  }
+
+  .entry-main p {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .entry-main .continue {
+    display: inline-block;
+    margin-top: 0.9rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--stamp);
+    text-decoration: none;
+    border-bottom: 1px solid var(--stamp);
+    padding-bottom: 1px;
+  }
+
+  /* Margin note / stamp column */
+  .margin-note {
+    position: relative;
+    padding-left: 1.6rem;
+    border-left: 1px dotted var(--rule);
+  }
+
+  .stamp {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--stamp);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transform: rotate(-8deg);
+    color: var(--stamp);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 0.8rem;
+  }
+  .stamp .score {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stamp .of10 {
+    font-size: 0.55rem;
+    letter-spacing: 0.05em;
+  }
+
+  .verdict {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .verdict::before { content: "“"; color: var(--brass); }
+  .verdict::after { content: "”"; color: var(--brass); }
+
+  .watched-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--rule);
+    margin-top: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 640px) {
+    .entry {
+      grid-template-columns: 1fr;
+    }
+    .entry-main {
+      grid-template-columns: 72px 1fr;
+    }
+    .poster {
+      width: 72px;
+      height: 108px;
+    }
+    .margin-note {
+      border-left: none;
+      border-top: 1px dotted var(--rule);
+      padding-left: 0;
+      padding-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stamp { margin-bottom: 0; flex-shrink: 0; }
+  }
+
+  footer {
+    text-align: center;
+    padding: 3rem 6vw 4rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+  }
+  footer a { color: var(--stamp); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Notes from the last row</div>
+    <h1 class="title">Ev's Movie <em>Musings</em></h1>
+    <p class="tagline">One seat, a notebook, and whatever's playing this week.</p>
+    <a class="subscribe-link" href="mailto:?subject=Subscribe%20to%20Ev%27s%20Movie%20Musings" id="subscribeLink">Subscribe</a>
+  </header>
+
+  <div class="ticker-outer">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+
+  <main>
+    <p class="intro">Reviews, half-formed thoughts, and the occasional argument with myself about whether a movie earned its ending — written by someone who pays for their own tickets.</p>
+
+    <nav class="shelf-nav" role="tablist" aria-label="Filter reviews by category">
+      <button type="button" class="active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button type="button" data-filter="horror" role="tab" aria-selected="false">Horror</button>
+      <button type="button" data-filter="new-release" role="tab" aria-selected="false">New Releases</button>
+      <button type="button" data-filter="old-release" role="tab" aria-selected="false">Old Releases</button>
+      <button type="button" data-filter="movie-list" role="tab" aria-selected="false">Movie Lists</button>
+    </nav>
+
+    <div class="entries" id="entries">
+      <p class="loading-note" id="loadingNote">Loading reviews…</p>
+    </div>
+
+    <p class="empty-shelf" id="emptyShelf">Nothing filed under this shelf yet — check back soon.</p>
+  </main>
+
+  <footer>
+    Ev's Movie Musings — reviews written for people who love film, not just critics.
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var entriesContainer = document.getElementById('entries');
+    var loadingNote = document.getElementById('loadingNote');
+    var emptyShelf = document.getElementById('emptyShelf');
+    var buttons = document.querySelectorAll('.shelf-nav button');
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str == null ? '' : str;
+      return div.innerHTML;
+    }
+
+    function renderEntry(review) {
+      var article = document.createElement('article');
+      article.className = 'entry';
+      article.setAttribute('data-category', review.category || '');
+
+      var hasPoster = review.image && String(review.image).trim() !== '';
+      var posterHtml = hasPoster
+        ? '<img class="poster" src="' + escapeHtml(review.image) + '" alt="' + escapeHtml(review.title) + ' poster" loading="lazy">'
+        : '';
+
+      article.innerHTML =
+        '<div class="entry-main' + (hasPoster ? '' : ' no-poster') + '">' +
+          posterHtml +
+          '<div class="entry-text">' +
+            '<div class="kicker">' + escapeHtml(review.kicker) + '</div>' +
+            '<h2>' + escapeHtml(review.title) + '</h2>' +
+            '<p>' + escapeHtml(review.body) + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="margin-note">' +
+          '<div class="stamp"><span class="score">' + escapeHtml(review.score) + '</span><span class="of10">' + escapeHtml(review.scoreUnit) + '</span></div>' +
+          '<div class="verdict">' + escapeHtml(review.verdict) + '</div>' +
+          '<div class="watched-date">' + escapeHtml(review.date) + '</div>' +
+        '</div>';
+      return article;
+    }
+
+    function applyFilter(filter) {
+      var entries = entriesContainer.querySelectorAll('.entry');
+      var visibleCount = 0;
+      entries.forEach(function (entry) {
+        var matches = filter === 'all' || entry.getAttribute('data-category') === filter;
+        entry.hidden = !matches;
+        if (matches) visibleCount++;
+      });
+      emptyShelf.classList.toggle('visible', visibleCount === 0);
+    }
+
+    function wireFilterButtons() {
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          applyFilter(btn.getAttribute('data-filter'));
+        });
+      });
+    }
+
+    function renderTickerSpan(item) {
+      var span = document.createElement('span');
+      span.textContent = (item.label || '') + ': ';
+      var b = document.createElement('b');
+      b.textContent = item.detail || '';
+      span.appendChild(b);
+      return span;
+    }
+
+    function loadTicker() {
+      var tickerInner = document.getElementById('tickerInner');
+      if (!tickerInner) return;
+      fetch('data/ticker.json', { cache: 'no-store' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Could not load ticker');
+          return res.json();
+        })
+        .then(function (data) {
+          var items = (data && data.items) || [];
+          if (items.length === 0) return;
+          // duplicate the list so the scroll animation loops seamlessly
+          items.concat(items).forEach(function (item) {
+            tickerInner.appendChild(renderTickerSpan(item));
+          });
+        })
+        .catch(function () {
+          // fail quietly — ticker just stays empty if it can't load
+        });
+    }
+
+    loadTicker();
+
+    fetch('data/reviews.json', { cache: 'no-store' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Could not load reviews');
+        return res.json();
+      })
+      .then(function (data) {
+        var reviews = (data && data.reviews) || [];
+        if (loadingNote) loadingNote.remove();
+        if (reviews.length === 0) {
+          emptyShelf.classList.add('visible');
+          return;
+        }
+        reviews.forEach(function (review) {
+          entriesContainer.appendChild(renderEntry(review));
+        });
+        wireFilterButtons();
+      })
+      .catch(function () {
+        if (loadingNote) loadingNote.textContent = "Couldn't load reviews right now — try refreshing.";
+      });
+  })();
+</script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", function (user) {});
+  }
+</script>
+</body>
+</html>
